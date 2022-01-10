@@ -15,12 +15,11 @@ export default class sendCommand extends BaseCommand {
   }
 
   async run(client: DiscordClient, message: Message, args: Array<string>) {
-    const channel = client.channels.cache.get(
-      "928746280765755443"
-    ) as TextChannel;
+    const channel = message.mentions.channels.first();
+    const text = args.slice(1).join(" ");
+    if (!channel || channel.type != "GUILD_TEXT")
+      return message.reply("Invlaid");
 
-    args.shift();
-    const text = args.join(" ");
     channel.send(text);
   }
 }

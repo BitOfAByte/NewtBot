@@ -1,17 +1,19 @@
-import BaseEvent from '../../utils/structures/BaseEvent';
-import { Message } from 'discord.js';
-import DiscordClient from '../../client/client';
+import BaseEvent from "../../utils/structures/BaseEvent";
+import { Message } from "discord.js";
+import DiscordClient from "../../client/client";
+const xp = require("discord-xp");
 
 export default class MessageEvent extends BaseEvent {
   constructor() {
-    super('messageCreate');
+    super("messageCreate");
   }
 
   async run(client: DiscordClient, message: Message) {
     if (message.author.bot) return;
+
     const config = client.configs.get(message.guildId!);
     if (!config) {
-      message.channel.send('No configuration set.');
+      message.channel.send("No configuration set.");
       return;
     }
     if (message.content.startsWith(config.prefix)) {

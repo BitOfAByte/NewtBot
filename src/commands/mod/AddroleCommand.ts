@@ -5,6 +5,7 @@ import {
   MessageSelectOptionData,
   Role,
   TextChannel,
+  MessageEmbed,
 } from "discord.js";
 import BaseCommand from "../../utils/structures/BaseCommand";
 import DiscordClient from "../../client/client";
@@ -16,6 +17,11 @@ export default class AddroleCommand extends BaseCommand {
 
   async run(client: DiscordClient, message: Message, args: Array<string>) {
     const channel = message.mentions.channels.first() as TextChannel;
+
+    if (message.guild?.ownerId != message.author.id)
+      return message.reply(
+        `Your id doesn't match with ${message.guild?.ownerId}`
+      );
 
     if (!channel || channel.type !== "GUILD_TEXT")
       message.reply("Mention a channel");
@@ -78,16 +84,11 @@ export default class AddroleCommand extends BaseCommand {
     await targetMessage.edit({
       components: [row],
     });
-    message.channel.send(`Added <@&${role.id}> to the menu!`);
-    /*
-    return {
-      custom: true,
-      content: `Added <@&${role.id}> to the meun`,
-      allowedMentions: {
-        roles: [],
-      },
-      ephemeral: true,
-    };
-    */
+    const embed = new MessageEmbed().setAuthor({
+      name: `Added ${role.name} to the menu`,
+      iconURL: message.author.displayAvatarURL(),
+    });
+
+    return message.channel.send({ embeds: [embed] });
   }
 }

@@ -6,6 +6,10 @@ import { Collection, Intents } from "discord.js";
 import { createConnection, getRepository } from "typeorm";
 import { GuildConfiguration } from "./typeorm/entities/GuildConfiguration";
 import { WarningConfiguration } from "./typeorm/entities/WarningConfiguration";
+import { MuteConfiguration } from "./typeorm/entities/MuteConfiguration";
+import { KickConfiguration } from "./typeorm/entities/KickConfiguration";
+import { BanConfiguration } from "./typeorm/entities/BanConfiguration";
+import { MemberConfiguration } from "./typeorm/entities/MemberConfiguration";
 
 const client = new DiscordClient({
   intents: [
@@ -24,7 +28,14 @@ const client = new DiscordClient({
     password: process.env.MYSQL_DB_PASSWORD,
     database: process.env.MYSQL_DB_DATABASE,
     synchronize: true,
-    entities: [GuildConfiguration, WarningConfiguration],
+    entities: [
+      GuildConfiguration,
+      WarningConfiguration,
+      MuteConfiguration,
+      KickConfiguration,
+      BanConfiguration,
+      MemberConfiguration,
+    ],
   });
 
   const configRepo = getRepository(GuildConfiguration);
@@ -33,8 +44,6 @@ const client = new DiscordClient({
   guildConfigs.forEach((config) => configs.set(config.guildId, config));
 
   client.configs = configs;
-  console.log(client.configs);
-
   await registerCommands(client, "../commands");
   await registerEvents(client, "../events");
   await client.login(process.env.DJS_BOT_TOKEN);
