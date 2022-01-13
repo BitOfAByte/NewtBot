@@ -10,6 +10,7 @@ import { MuteConfiguration } from "./typeorm/entities/MuteConfiguration";
 import { KickConfiguration } from "./typeorm/entities/KickConfiguration";
 import { BanConfiguration } from "./typeorm/entities/BanConfiguration";
 import { MemberConfiguration } from "./typeorm/entities/MemberConfiguration";
+import { GiveawayConfiguration } from "./typeorm/entities/GiveawayConfiguration";
 
 const client = new DiscordClient({
   intents: [
@@ -35,6 +36,7 @@ const client = new DiscordClient({
       KickConfiguration,
       BanConfiguration,
       MemberConfiguration,
+      GiveawayConfiguration,
     ],
   });
 
