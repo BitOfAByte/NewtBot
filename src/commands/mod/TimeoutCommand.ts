@@ -4,31 +4,34 @@ import DiscordClient from '../../client/client';
 import { getRepository, Repository } from 'typeorm';
 import { ModerationLog } from '../../typeorm/entities/ModerationLog';
 
-export default class KickCommand extends BaseCommand {
+export default class TimeoutCommand extends BaseCommand {
   constructor(
     private readonly modLogRepository: Repository<ModerationLog> = getRepository(
       ModerationLog
     )
   ) {
-    super('kick', 'mod', []);
+    super('timeout', 'mod', []);
   }
 
   async run(client: DiscordClient, message: Message, args: Array<string>) {
     console.log(args);
-    const [memberId, ...rest] = args;
+    const [memberId, timeoutStr, ...rest] = args;
     const reason = rest.join(' ');
+    const time = parseInt(timeoutStr);
+    if (isNaN(time)) {
+      message.channel.send('Invalid Time');
+      return;
+    }
     try {
-      // const member = await message.guild?.members.fetch(memberId)!;
-      // await member.kick(reason);
-      const date = new Date();
-      date.setDate(date.getDate() - 6);
+      const member = await message.guild?.members.fetch(memberId)!;
+      await member.timeout(time * 1000, reason);
       const modLog = this.modLogRepository.create({
         guildId: message.guildId!,
         memberId,
         issuedBy: message.author.id,
-        issuedOn: date,
+        issuedOn: new Date(),
         reason,
-        type: 'kick',
+        type: 'timeout',
       });
       await this.modLogRepository.save(modLog);
     } catch (err) {

@@ -1,5 +1,5 @@
 // https://discord.js.org/#/docs/main/stable/class/Client?scrollTo=e-guildMemberAdd
-import { GuildMember, TextChannel } from "discord.js";
+import { Guild, GuildMember, TextChannel } from "discord.js";
 import BaseEvent from "../utils/structures/BaseEvent";
 import DiscordClient from "../client/client";
 import { getRepository, Repository } from "typeorm";
@@ -9,19 +9,18 @@ export default class GuildMemberAddEvent extends BaseEvent {
     super("guildMemberAdd");
   }
 
-  async run(client: DiscordClient, member: GuildMember) {
+  async run(client: DiscordClient, member: GuildMember, guild: Guild) {
+    const channel = guild.channels.cache.get("931283214872498266");
     const warnRepo: Repository<MemberConfiguration> =
       getRepository(MemberConfiguration);
 
-    console.log(`Guild Member Joined`);
-    console.log(`Joined ${member.guild.id} ${member.guild.name}`);
     const config = client.configs.get(member.guild.id);
 
-    const data = warnRepo.insert({
-      user: member.user.username,
-      userId: member.id,
-      level: 0,
-    });
+    const updateMembers = (guilds: Guild) => {
+      channel?.setName(`${guilds.memberCount.toLocaleString()}`);
+    };
+
+    updateMembers(guild);
 
     if (!config) return;
     if (config.welcomeChannelId) {

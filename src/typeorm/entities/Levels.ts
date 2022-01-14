@@ -1,7 +1,7 @@
 import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity({ name: "user_info" })
-export class GuildConfiguration {
+export class LevelConfiguration {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -12,13 +12,13 @@ export class GuildConfiguration {
   userId: string;
 
   @Column()
-  level: Number;
+  level: number;
 
   @Column()
-  xp: Number;
+  xp: number;
 
   @Column()
-  lastMessage: Number;
+  lastMessage: number;
 
   @Column()
   server: string;
