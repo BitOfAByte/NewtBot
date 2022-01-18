@@ -1,7 +1,7 @@
 import { Message, GuildMember, User } from "discord.js";
 import BaseCommand from "../../utils/structures/BaseCommand";
 import DiscordClient from "../../client/client";
-import { BanConfiguration } from "../../typeorm/entities/BanConfiguration";
+import { ModerationLog } from "../../typeorm/entities/ModerationLog";
 import { getRepository, Repository } from "typeorm";
 
 export default class WarnCommand extends BaseCommand {
@@ -10,8 +10,7 @@ export default class WarnCommand extends BaseCommand {
   }
 
   async run(client: DiscordClient, message: Message, args: Array<string>) {
-    const warnRepo: Repository<BanConfiguration> =
-      getRepository(BanConfiguration);
+    const warnRepo: Repository<ModerationLog> = getRepository(ModerationLog);
 
     const member = message.mentions.members?.first();
 
@@ -22,7 +21,7 @@ export default class WarnCommand extends BaseCommand {
       return message.reply("No permissions!");
 
     const banConfig = await warnRepo.find({
-      userId: member.id,
+      memberId: member.id,
     });
 
     for (const bans of banConfig) {

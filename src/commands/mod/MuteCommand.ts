@@ -2,15 +2,14 @@ import { Message, MessageEmbed, Role } from "discord.js";
 import BaseCommand from "../../utils/structures/BaseCommand";
 import DiscordClient from "../../client/client";
 import { getRepository, Repository } from "typeorm";
-import { MuteConfiguration } from "../../typeorm/entities/MuteConfiguration";
+import { ModerationLog } from "../../typeorm/entities/ModerationLog";
 export default class sendCommand extends BaseCommand {
   constructor() {
     super("mute", "mod", []);
   }
 
   async run(client: DiscordClient, message: Message, args: Array<string>) {
-    const muteRepo: Repository<MuteConfiguration> =
-      getRepository(MuteConfiguration);
+    const muteRepo: Repository<ModerationLog> = getRepository(ModerationLog);
 
     const member =
       message.mentions.members?.first() ||
@@ -32,28 +31,27 @@ export default class sendCommand extends BaseCommand {
     member.roles.add(role);
     await muteRepo.insert({
       guildId: message.guild?.id,
-      user: member.user.tag,
-      userId: member.id,
+      memberId: member.id,
       reason: reason,
-      active: true,
-      moderator: message.author.tag,
+      issuedOn: new Date(),
+      issuedBy: message.author.id,
     });
 
     const muteData = await muteRepo.find({
-      userId: member.id,
+      memberId: member.id,
     });
 
     for (const values of muteData) {
       const embed = new MessageEmbed()
         .setAuthor({
-          name: `${values.user} has been valuesed [Case ID: ${values.id}]`,
+          name: `${values.memberId} has been valuesed [Case ID: ${values.id}]`,
         })
         .addFields(
-          { name: `Member: `, value: `${values.user}`, inline: true },
-          { name: `Moderator:`, value: `${values.moderator}`, inline: true },
+          { name: `Member: `, value: `${values.memberId}`, inline: true },
+          { name: `Moderator:`, value: `${values.issuedBy}`, inline: true },
           { name: `Guild ID: `, value: `${values.guildId}`, inline: true },
           { name: `Reason`, value: `${values.reason}`, inline: false },
-          { name: `Active: `, value: `${values.active}`, inline: true }
+          { name: `Date: `, value: `${values.issuedOn}`, inline: true }
         )
         .setThumbnail(message.author.displayAvatarURL())
         .setColor("RANDOM");

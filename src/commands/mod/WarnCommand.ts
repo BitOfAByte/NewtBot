@@ -1,18 +1,19 @@
 import { Message, GuildMember, User } from "discord.js";
 import BaseCommand from "../../utils/structures/BaseCommand";
 import DiscordClient from "../../client/client";
-import { WarningConfiguration } from "../../typeorm/entities/WarningConfiguration";
+import { ModerationLog } from "../../typeorm/entities/ModerationLog";
 import { getRepository, Repository } from "typeorm";
 
-export default class WarnCommand extends BaseCommand {
-  constructor() {
+export default class KickCommand extends BaseCommand {
+  constructor(
+    private readonly modLogRepository: Repository<ModerationLog> = getRepository(
+      ModerationLog
+    )
+  ) {
     super("warn", "mod", []);
   }
 
   async run(client: DiscordClient, message: Message, args: Array<string>) {
-    const warnRepo: Repository<WarningConfiguration> =
-      getRepository(WarningConfiguration);
-
     const member = message.mentions.members?.first();
     const reason = args.slice(1).join(" ");
 
@@ -22,14 +23,17 @@ export default class WarnCommand extends BaseCommand {
     if (!member.permissions.has("MANAGE_MESSAGES"))
       return message.reply("No permissions!");
 
-    await warnRepo.insert({
-      guildId: message.guild?.id,
-      user: member.user.tag,
-      moderator: message.author.tag,
-      reason: reason,
-      active: true,
-      userId: member.id,
+    const date = new Date();
+    date.setDate(date.getDate() - 6);
+    const modLog = this.modLogRepository.create({
+      guildId: message.guildId!,
+      memberId: member.id,
+      issuedBy: message.author.id,
+      issuedOn: date,
+      reason,
+      type: "warn",
     });
+    await this.modLogRepository.save(modLog);
 
     message.reply(
       `<@${member?.id}> has been warned by <@${message.author?.id}> for **${reason}**`
