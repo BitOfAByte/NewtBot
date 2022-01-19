@@ -1,7 +1,7 @@
 import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity({ name: "user_info" })
-export class LevelConfiguration {
+export default class LevelConfiguration {
   @PrimaryGeneratedColumn()
   id: number;
 
