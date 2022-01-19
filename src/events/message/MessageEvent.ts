@@ -1,7 +1,7 @@
 import BaseEvent from "../../utils/structures/BaseEvent";
 import { GuildMember, Message } from "discord.js";
 import DiscordClient from "../../client/client";
-import { getRepository, Repository } from "typeorm";
+import { calcLevel } from "../../utils/calculateLevel";
 export default class MessageEvent extends BaseEvent {
   constructor() {
     super("messageCreate");
@@ -26,6 +26,8 @@ export default class MessageEvent extends BaseEvent {
       if (command) {
         command.run(client, message, cmdArgs);
       }
+    } else {
+      calcLevel(client, message);
     }
   }
 }

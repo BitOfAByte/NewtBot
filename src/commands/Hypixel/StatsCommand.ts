@@ -15,7 +15,7 @@ export default class LoadmembersCommand extends BaseCommand {
     if (!player) return message.reply("You must provide a mc username");
     axios
       .get(`https://api.hypixel.net/player?key=${api_key}&name=${player}`)
-      .then((res) => {
+      .then((res: any) => {
         const embed = new MessageEmbed()
           .setAuthor({
             name: `Stats for ${res.data.player.displayname}`,
@@ -72,7 +72,7 @@ export default class LoadmembersCommand extends BaseCommand {
 
         message.channel.send({ embeds: [embed] });
       })
-      .catch((err) => {
+      .catch((err: any) => {
         message.channel.send("ERROR " + err.message);
       });
   }
