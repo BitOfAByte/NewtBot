@@ -1,5 +1,5 @@
 import BaseEvent from "../../utils/structures/BaseEvent";
-import { Message } from "discord.js";
+import { GuildMember, Message } from "discord.js";
 import DiscordClient from "../../client/client";
 import { getRepository, Repository } from "typeorm";
 export default class MessageEvent extends BaseEvent {
@@ -7,9 +7,11 @@ export default class MessageEvent extends BaseEvent {
     super("messageCreate");
   }
 
-  async run(client: DiscordClient, message: Message) {
+  async run(client: DiscordClient, message: Message, member: GuildMember) {
     if (message.author.bot) return;
-
+    if (message.channel?.id === "929797366146560011") {
+      member.kick(`Typed in the wrong channel... ${message.channel}`);
+    }
     const config = client.configs.get(message.guildId!);
     if (!config) {
       message.channel.send("No configuration set.");
