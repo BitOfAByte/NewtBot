@@ -1,7 +1,7 @@
 import { Entity, Column, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity("giveaways")
-export class GiveawayConfiguration {
+export default class GiveawayConfiguration {
   @PrimaryGeneratedColumn()
   id!: number;
 
