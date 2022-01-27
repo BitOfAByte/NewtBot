@@ -2,6 +2,8 @@ import BaseEvent from "../../utils/structures/BaseEvent";
 import { GuildMember, Message } from "discord.js";
 import DiscordClient from "../../client/client";
 import { calcLevel } from "../../utils/calculateLevel";
+import { channel } from "diagnostics_channel";
+import { clearTimeout } from "timers";
 export default class MessageEvent extends BaseEvent {
   constructor() {
     super("messageCreate");
@@ -17,6 +19,28 @@ export default class MessageEvent extends BaseEvent {
       message.channel.send("No configuration set.");
       return;
     }
+    let count = 0;
+    let timeout;
+
+    if (
+      message.channel.type === "GUILD_TEXT" &&
+      message.channel.name === "counting"
+    ) {
+      if (Number(message.content) === 1) {
+        count++;
+        if (timeout) clearTimeout(timeout);
+        timeout = setTimeout(() =>
+          message.channel.send("test " + count++).catch((err) => {
+            console.log(err);
+          })
+        );
+      } else if (message.author.id != client.user?.id) {
+        message.channel.send(`${member} messed up!`).catch(console.error);
+        count = 0;
+        if (timeout) clearTimeout(timeout);
+      }
+    }
+
     if (message.content.startsWith(config.prefix)) {
       const [cmdName, ...cmdArgs] = message.content
         .slice(config.prefix.length)
