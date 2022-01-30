@@ -1,11 +1,12 @@
-require('dotenv').config();
-import 'reflect-metadata';
-import { registerCommands, registerEvents } from './utils/registry';
-import DiscordClient from './client/client';
-import { Collection, Intents } from 'discord.js';
-import { createConnection, getRepository } from 'typeorm';
-import { GuildConfiguration } from './typeorm/entities/GuildConfiguration';
-import { entities } from './typeorm/entities';
+require("dotenv").config();
+import "reflect-metadata";
+import { registerCommands, registerEvents } from "./utils/registry";
+import DiscordClient from "./client/client";
+import { Collection, Intents } from "discord.js";
+import { createConnection, getRepository } from "typeorm";
+import { GuildConfiguration } from "./typeorm/entities/GuildConfiguration";
+import { entities } from "./typeorm/entities";
+import { io } from "socket.io-client";
 
 const client = new DiscordClient({
   intents: [
@@ -16,8 +17,14 @@ const client = new DiscordClient({
 });
 
 (async () => {
+  const socket = io("http://localhost:3001");
+
+  socket.on("guildPrefixUpdate", (data: any) => {
+    console.log("guildPrefixUpdate ", data);
+  });
+
   await createConnection({
-    type: 'mysql',
+    type: "mysql",
     host: process.env.MYSQL_DB_HOST,
     port: 3306,
     username: process.env.MYSQL_DB_USERNAME,
@@ -33,9 +40,8 @@ const client = new DiscordClient({
   guildConfigs.forEach((config) => configs.set(config.guildId, config));
 
   client.configs = configs;
-  console.log(client.configs);
 
-  await registerCommands(client, '../commands');
-  await registerEvents(client, '../events');
+  await registerCommands(client, "../commands");
+  await registerEvents(client, "../events");
   await client.login(process.env.DJS_BOT_TOKEN);
 })();

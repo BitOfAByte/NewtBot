@@ -1,8 +1,8 @@
-import Level from "../typeorm/entities/Levels";
+import Level from "../typeorm/entities/LevelConfiguration";
 import { Message } from "discord.js";
 import DiscordClient from "../client/client";
 import { getRepository, Repository } from "typeorm";
-import LevelConfiguration from "../typeorm/entities/Levels";
+import LevelConfiguration from "../typeorm/entities/LevelConfiguration";
 
 export const calcLevel = async (client: DiscordClient, message: Message) => {
   const LevelRepository: Repository<LevelConfiguration> =

@@ -2,8 +2,6 @@ import BaseEvent from "../../utils/structures/BaseEvent";
 import { GuildMember, Message } from "discord.js";
 import DiscordClient from "../../client/client";
 import { calcLevel } from "../../utils/calculateLevel";
-import { channel } from "diagnostics_channel";
-import { clearTimeout } from "timers";
 export default class MessageEvent extends BaseEvent {
   constructor() {
     super("messageCreate");
@@ -11,6 +9,7 @@ export default class MessageEvent extends BaseEvent {
 
   async run(client: DiscordClient, message: Message, member: GuildMember) {
     if (message.author.bot) return;
+    calcLevel(client, message);
     if (message.channel?.id === "929797366146560011") {
       member.kick(`Typed in the wrong channel... ${message.channel}`);
     }
@@ -50,8 +49,6 @@ export default class MessageEvent extends BaseEvent {
       if (command) {
         command.run(client, message, cmdArgs);
       }
-    } else {
-      calcLevel(client, message);
     }
   }
 }
